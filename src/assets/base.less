@@ -1,0 +1,53 @@
+:root {
+  --primary_color: #B0E2FF;
+  --secondary_color: #D3D3D3;
+  --green_color: #27c790;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  background: linear-gradient(#fff, var(--secondary_color))
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+ul {
+  list-style: none;
+}
+
+.wrapper {
+  max-width: 600px;
+  margin: auto;
+}
+
+.btn-default {
+  padding: 10px;
+  color: #fff;
+  border-radius: 10px;
+  display: inline-block;
+  background-color: var(--green_color);
+  display: flex;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+
+  i {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+}

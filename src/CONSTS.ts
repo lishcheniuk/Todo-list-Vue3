@@ -1,0 +1,1 @@
+export const colors: Array<string> = ['#B0E2FF', '#EEDD82', '#98FB98', '#8470FF', '#F08080'];
