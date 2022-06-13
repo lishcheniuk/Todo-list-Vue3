@@ -15,7 +15,9 @@ const slots = useSlots();
 const showPopup = ref<boolean>(false);
 
 function switchVisibility() {
-    if (showPopup.value) emit('close');
+    if (showPopup.value) {
+        emit('close');
+    }
     showPopup.value = !showPopup.value;
 }
 </script>

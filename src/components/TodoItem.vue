@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 import type { ITodo } from '@/store/types';
-import type { EditType, IProvideEditTodo } from '@/views/CreateNote.vue';
+import type { IProvideEditTodo } from '@/hooks/useEditNote';
 
 const props = defineProps<{
     todo: ITodo;
@@ -10,8 +10,12 @@ const props = defineProps<{
 const modeEdit = inject<boolean>('modeEdit', false);
 const injectEditTodo = inject<IProvideEditTodo | null>('provideEditTodo', null);
 
-function handlerEdit(type: EditType) {
-    injectEditTodo?.editTodo(props.todo.id, type)
+function handlerChange() {
+    injectEditTodo?.switchTodo({ ...props.todo, isChecked: !props.todo.isChecked })
+}
+
+function handlerEditTitle() {
+    injectEditTodo?.editTodoWithPopup(props.todo);
 }
 
 function handlerRemove() {
@@ -27,7 +31,7 @@ function handlerRemove() {
             type="checkbox"
             :disabled="!modeEdit"
             :checked="props.todo.isChecked"
-            @change="handlerEdit('checkbox')"
+            @change="handlerChange"
         />
         <label :for="todo.id">{{ todo.title }}</label>
 
@@ -37,7 +41,7 @@ function handlerRemove() {
         >
             <button
                 class="options__btn"
-                @click="handlerEdit('title')"
+                @click="handlerEditTitle"
             >
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
@@ -53,7 +57,7 @@ function handlerRemove() {
 
 <style lang="less" scoped>
 .todo-item {
-    margin: 10px 0;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
 
@@ -75,7 +79,7 @@ function handlerRemove() {
             border: none;
             font-size: 20px;
             background-color: inherit;
-            padding: 5px;
+            padding: 0px 5px;
             cursor: pointer;
         }
     }

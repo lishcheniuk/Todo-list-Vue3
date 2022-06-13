@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { colors } from '@/CONSTS';
+import type { INote } from '@/store/types';
 
 const props = defineProps<{
-    modelTitle: string;
-    modelColor: string;
+    note: INote;
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelColor', color: string): void;
-    (e: 'update:modelTitle', title: string): void;
+    (e: 'editNote', note: INote): void;
 }>();
 </script>
 
@@ -19,17 +18,17 @@ const emit = defineEmits<{
                 v-for="(color, index) in colors"
                 :key="index"
                 class="color-item"
-                :class="{ active: color === props.modelColor }"
+                :class="{ active: color === props.note.color }"
                 :style="{ backgroundColor: color }"
-                @click="emit('update:modelColor', color)"
+                @click="emit('editNote', {...note, color})"
             ></li>
         </ul>
 
         <div class="title-note">
             <input
                 type="text"
-                :value="props.modelTitle"
-                @input="emit('update:modelTitle', ($event.target as HTMLInputElement).value)"
+                :value="props.note.title"
+                @input="emit('editNote',{...note, title: ($event.target as HTMLInputElement).value})"
                 placeholder="Enter note title"
             />
         </div>
@@ -38,11 +37,11 @@ const emit = defineEmits<{
 
 <style lang="less" scoped>
 .create-note__options {
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .title-note {
-    margin-top: 20px;
+    margin-top: 30px;
 
     input[type=text] {
         padding: 10px;

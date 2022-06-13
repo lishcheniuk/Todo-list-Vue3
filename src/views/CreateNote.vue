@@ -9,12 +9,12 @@ import { useEditNote } from '@/hooks/useEditNote';
 
 const router = useRouter();
 const store = useStore();
-const { noteRef: note, todoList, popupAddTodoRef, editTodo, addNewTodo } = useEditNote();
+const { noteRef, todoList, popupAddTodoRef, editTodo, addNewTodo, editNote } = useEditNote();
 
 function handlerSaveNote() {
     store.commit('saveNote', {
-        ...note.value,
-        title: note.value.title || 'Default note title',
+        ...noteRef.value,
+        title: noteRef.value.title || 'Default note title',
         todos: todoList.value
     });
     router.push('/')
@@ -39,13 +39,13 @@ function handlerSaveNote() {
         </the-header>
 
         <TheNote
-            :note="note"
+            :note="noteRef"
             :todoList="todoList"
             @addTodo="popupAddTodoRef?.show();"
         />
         <CreateNoteOptions
-            v-model:modelColor="note.color"
-            v-model:modelTitle.trim="note.title"
+            :note="noteRef"
+            @editNote="editNote"
         />
     </div>
 

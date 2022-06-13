@@ -1,18 +1,16 @@
-import type { INote, ITodo } from "@/store/types";
-
 export enum StorageKeys {
     Notes = 'notes'
 }
 
-export function storageSetItem(key: StorageKeys, payload: INote[] | ITodo) {
+export function storageSetItem(key: StorageKeys, payload: unknown) {
     localStorage.setItem(key, JSON.stringify(payload))
 }
 
-export function storageGetItem(key: StorageKeys) {
-    const value = localStorage.getItem(key);
-    if (!value) return [];
+export function storageGetItem<T>(key: StorageKeys) {
     try {
-        return JSON.parse(value)
+        const value = localStorage.getItem(key);
+        if (!value) return [];
+        return JSON.parse(value) as T;
     } catch (error) {
         return [];
     }

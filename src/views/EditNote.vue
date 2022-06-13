@@ -1,32 +1,37 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import TheNote from '@/components/TheNote.vue';
 import TheHeader from '@/components/TheHeader.vue';
 import { useStore } from '@/store';
 import CreateNoteOptions from '../components/CreateNoteOptions.vue';
 import PopupAddTodo from '../components/PopupAddTodo.vue';
+import PopupConfirm from '@/components/PopupConfirm.vue'
 import type { INote } from '@/store/types';
 import { useEditNote } from '@/hooks/useEditNote';
 
 interface IHeaderBtn {
     title: string;
     icon: string;
+    disabled: boolean;
     handler: () => void;
 }
-
-const headerBtn: IHeaderBtn[] = [
-    { title: 'Cancel', icon: 'fa-reply-all', handler: setInitialValues },
-    { title: 'Redo', icon: 'fa-rotate-left', handler: handlerRedo },
-    { title: 'Undo', icon: 'fa-rotate-right', handler: handlerUndo }
-];
 
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
+const popupConfirmRef = ref();
 const noteId = route.params.id;
 
-const { noteRef, todoList, popupAddTodoRef, editTodo, addNewTodo } = useEditNote();
+const { noteRef, todoList, popupAddTodoRef, undoList, redoList, editTodo, addNewTodo, handlerRedo, handlerUndo, editNote } = useEditNote();
+
+const headerBtn = computed<IHeaderBtn[]>(() => (
+    [
+        { title: 'Cancel', icon: 'fa-reply-all', disabled: redoList.value.length < 2, handler: cancelAllChanges },
+        { title: 'Redo', icon: 'fa-rotate-left', disabled: !redoList.value.length, handler: handlerRedo },
+        { title: 'Undo', icon: 'fa-rotate-right', disabled: !undoList.value.length, handler: handlerUndo }
+    ]
+));
 
 const getCurrentNote = computed(() => store.getters.getNotes.find((note: INote) => note.id === noteId));
 
@@ -38,6 +43,11 @@ function setInitialValues() {
     const { todos, ...other } = getCurrentNote.value;
     todoList.value = todos.concat();
     noteRef.value = other;
+
+    if (undoList.value.length || redoList.value.length) {
+        undoList.value = [];
+        redoList.value = [];
+    }
 }
 
 function handlerSaveNote() {
@@ -49,14 +59,8 @@ function handlerSaveNote() {
     router.push('/')
 }
 
-function handlerRedo() {
-    console.log(43);
-
-}
-
-function handlerUndo() {
-    console.log('undo');
-
+function cancelAllChanges() {
+    popupConfirmRef.value.show(setInitialValues);
 }
 </script>
 
@@ -72,6 +76,7 @@ function handlerUndo() {
                     :key="btn.icon"
                     class="btn-edit-page btn-default"
                     :title="btn.title"
+                    :disabled="btn.disabled"
                     @click="btn.handler"
                 >
                     <i :class="['fa-solid', btn.icon]"></i>
@@ -80,6 +85,7 @@ function handlerUndo() {
                     class="btn-default"
                     @click="handlerSaveNote"
                     title="Save"
+                    :disabled="!redoList.length"
                 >
                     <i class="fa-solid fa-floppy-disk"></i>
                     Save
@@ -93,8 +99,8 @@ function handlerUndo() {
             @addTodo="popupAddTodoRef?.show();"
         />
         <CreateNoteOptions
-            v-model:modelColor="noteRef.color"
-            v-model:modelTitle.trim="noteRef.title"
+            :note="noteRef"
+            @editNote="editNote"
         />
     </div>
 
@@ -103,6 +109,13 @@ function handlerUndo() {
         @add="addNewTodo"
         @edit="editTodo"
     />
+
+    <PopupConfirm
+        ref="popupConfirmRef"
+        title="Cancel changes"
+    >
+        Are you sure you want to undo all changes?
+    </PopupConfirm>
 </template>
 
 <style lang="less" scoped>
