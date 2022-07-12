@@ -1,6 +1,6 @@
 # vue3-2022-todolist
 
-[https://todo-list-ea355.web.app/](https://todo-list-ea355.web.app/)
+Пример можно посмотреть по ссылке [https://todo-list-ea355.web.app/](https://todo-list-ea355.web.app/)
 
 ## Recommended IDE Setup
 
